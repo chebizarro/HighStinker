@@ -2,20 +2,28 @@
  The High Stinker
  The High Stinker gives you the chance to test your fart potency.
  The average human can produce over 100ml of methane per day.
+ How much have you got?
 */
 
-int led = 10; // LED pin
-int gas_sensor = A0; // Sensor pin
+int led = 13; // LED pin
+int gas_sensor = 0; // Sensor pin
 float m = -0.318; // Slope
 float b = 1.133; // Y-Intercept
-float R0; // 11.820; // Sensor Resistance in fresh air
-
+float R0 = 11.820; // Sensor Resistance in fresh air
+   
 void setup() {
   Serial.begin(9600);
+
   pinMode(led, OUTPUT); // Set LED as output
   digitalWrite(led, LOW); // Turn LED off
   pinMode(gas_sensor, INPUT); // Set gas sensor as input
-  R0 = calibrate();
+
+  /*
+  Serial.println("Calibrating sensor");
+  R0 = calibrate(gas_sensor);
+  Serial.print("R0 value: ");
+  Serial.println(R0);
+  */
 }
 
 void loop() {
@@ -28,7 +36,11 @@ void loop() {
   double ppm = pow(10, ppm_log); // Convert ppm value to log scale
   double percentage = ppm / 10000; // Convert to percentage
 
-  if (ppm > 2000) {
+  Serial.print("Methane value: ");
+  Serial.print(ppm);
+  Serial.println(" ppm");
+
+  if (ppm > 2.0) {
     digitalWrite(led, HIGH); //Turn LED on
   } else {
     digitalWrite(led, LOW);
