@@ -4,45 +4,59 @@
  The average human can produce over 100ml of methane per day.
  How much have you got?
 */
+#include <FastLED.h>
+#include "methane_sensor.h"
+#include "hydrogen_sensor.h"
+#include "rotating_light.h"
+#include "pumps.h"
 
-int led = 13; // LED pin
-int gas_sensor = 0; // Sensor pin
-float m = -0.318; // Slope
-float b = 1.133; // Y-Intercept
-float R0 = 11.820; // Sensor Resistance in fresh air
+#define BAUD_RATE       9600
+
+#define PUMPS           3
+#define ROTATING_LIGHT  4
+#define LED01           5
+#define LED02           6
+#define METHANE_SENSOR  8
+#define HYDROGEN_SENSOR 9
+#define RESET_BUTTON    13
+
+#define METHANE_HIGH    2000
+#define METHANE_MED     2000
+#define METHANE_LOW     2000
+
+#define HYDROGEN_HIGH   2000
+#define HYDROGEN_MED    2000
+#define HYDROGEN_LOW    2000
+
+#define NUM_LEDS        150
+
+CRGB leds[NUM_LEDS];
+MethaneSensor methane_sensor(METHANE_SENSOR);
+HydrogenSensor hydro_sensor(HYDROGEN_SENSOR);
+RotatingLight rotating_light(ROTATING_LIGHT);
+Pumps pumps(PUMPS);
    
 void setup() {
-  Serial.begin(9600);
+  //Serial.begin(BAUD_RATE);
 
-  pinMode(led, OUTPUT); // Set LED as output
-  digitalWrite(led, LOW); // Turn LED off
-  pinMode(gas_sensor, INPUT); // Set gas sensor as input
+  // Set up sensors
+  methane_sensor.init();
 
-  /*
-  Serial.println("Calibrating sensor");
-  R0 = calibrate(gas_sensor);
-  Serial.print("R0 value: ");
-  Serial.println(R0);
-  */
+  // Set up pumps and LEDs
+  pumps.init();
+  rotating_light.init();
+  FastLED.addLeds<WS2811, LED01>(leds, NUM_LEDS);
+  FastLED.addLeds<WS2811, LED02>(leds, NUM_LEDS);
+
 }
 
 void loop() {
-  float sensorValue = analogRead(gas_sensor);
-  float sensor_volt = sensorValue * (5.0 / 1023.0); // Convert analog values to voltage
-  float RS_gas = ((5.0 * 10.0) / sensor_volt) - 10.0; // Get value of RS in a gas
-  float ratio = RS_gas / R0;
+  leds[1] = CRGB::Red; 
+  FastLED.show(); 
+  delay(30); 
 
-  double ppm_log = (log10(ratio) - b) / m; // Get ppm value in linear scale according to the the ratio value
-  double ppm = pow(10, ppm_log); // Convert ppm value to log scale
-  double percentage = ppm / 10000; // Convert to percentage
+  // read sensors
+  float methane_ppm = methane_sensor.get_value();
+  float hydrogen_ppm = hydro_sensor.get_value();
 
-  Serial.print("Methane value: ");
-  Serial.print(ppm);
-  Serial.println(" ppm");
-
-  if (ppm > 2.0) {
-    digitalWrite(led, HIGH); //Turn LED on
-  } else {
-    digitalWrite(led, LOW);
-  }
 }
