@@ -9,6 +9,10 @@ void Pumps::init() {
   
 }
 
-void Pumps::changeState() {
-  
+void Pumps::changeState(PumpsState state) {
+  if (state == PumpsState::on) {
+    digitalWrite(mOutput, HIGH);
+  } else {
+    digitalWrite(mOutput, LOW);
+  }
 }

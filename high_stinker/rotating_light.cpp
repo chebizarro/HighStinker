@@ -12,8 +12,8 @@ void RotatingLight::init() {
 
 void RotatingLight::changeState(RotatingLightState state) {
   if (state == RotatingLightState::on) {
-    digitalWrite(mOutput, 0);
+    digitalWrite(mOutput, HIGH);
   } else {
-    digitalWrite(mOutput, 1);
+    digitalWrite(mOutput, LOW);
   }
 }

@@ -1,3 +1,5 @@
+enum class PumpsState { on, off };
+
 class Pumps {
 
 public:
@@ -5,7 +7,7 @@ public:
 
   void init();
 
-  void changeState();
+  void changeState(PumpsState);
 
 private:
   int mOutput;

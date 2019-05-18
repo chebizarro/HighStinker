@@ -28,9 +28,10 @@
 #define HYDROGEN_MED    2000
 #define HYDROGEN_LOW    2000
 
-#define NUM_LEDS        150
+#define NUM_LEDS        36
 
 CRGB leds[NUM_LEDS];
+
 MethaneSensor methane_sensor(METHANE_SENSOR);
 HydrogenSensor hydro_sensor(HYDROGEN_SENSOR);
 RotatingLight rotating_light(ROTATING_LIGHT);
@@ -45,15 +46,18 @@ void setup() {
   // Set up pumps and LEDs
   pumps.init();
   rotating_light.init();
-  FastLED.addLeds<WS2811, LED01>(leds, NUM_LEDS);
+  FastLED.addLeds<WS2811, LED01>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
   FastLED.addLeds<WS2811, LED02>(leds, NUM_LEDS);
 
 }
 
 void loop() {
   leds[1] = CRGB::Red; 
-  FastLED.show(); 
-  delay(30); 
+  //FastLED.show(); 
+
+  digitalWrite(ROTATING_LIGHT, LOW);
+
+  delay(300);
 
   // read sensors
   float methane_ppm = methane_sensor.get_value();
